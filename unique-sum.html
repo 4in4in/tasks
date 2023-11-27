@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Array sum</title>
+  </head>
+  <style>
+    #array-input:invalid {
+      border-color: #900;
+      background-color: #fdd;
+    }
+  </style>
+  <body>
+    <input type="text" id="array-input" pattern="^(\d+\s*,\s*|\d)+" />
+    <span id="result-span">0</span>
+  </body>
+  <script>
+    (() => {
+      var uniqueSum = (array) => {
+        var visited = new Set();
+        var banned = new Set();
+
+        var reducer = (sum, current) => {
+          var number = +current;
+          if (banned.has(number)) {
+            return sum;
+          }
+
+          return visited.delete(number)
+            ? (banned.add(number), sum - number)
+            : (visited.add(number), sum + number);
+        };
+        return array.reduce(reducer, 0);
+      };
+
+      var createKeyupCallback = (resultSpan) => {
+        var prevValue = "";
+
+        return (event) => {
+          var { value } = event.target;
+
+          if (prevValue !== value) {
+            prevValue = value;
+
+            if (event.target.checkValidity()) {
+              resultSpan.innerText =
+                value.length !== 0 ? uniqueSum(value.match(/\d+/g)) : "0";
+            }
+          }
+        };
+      };
+
+      document
+        .getElementById("array-input")
+        .addEventListener(
+          "keyup",
+          createKeyupCallback(document.getElementById("result-span"))
+        );
+    })();
+  </script>
+</html>
