@@ -18,13 +18,13 @@ public:
         }
 
         // get possible sign ("+" or "-")
-        if (s[curr_idx] == '-' || s[curr_idx] == '+')
+        switch (s[curr_idx])
         {
-            if (s[curr_idx] == '-')
-            {
-                sign = -1;
-            }
+        case '-':
+            sign = -1;
+        case '+':
             ++curr_idx;
+            break;
         }
 
         // skip leading zeroes
