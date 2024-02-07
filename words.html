@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Document</title>
+  </head>
+  <body>
+    <p>
+      <span id="original"></span>
+      <br />
+      <span id="processed"></span>
+    </p>
+  </body>
+  <script>
+    /*
+      есть предложение:
+        Опять же, думайте не столько о конечном результате, сколько о проектах развития, о действиях, которых вы должны совершить.
+      
+      есть массив 
+        ['же','не','о','о','о','вы']
+      
+      надо динамически выделить каким-то стилем слова из массива
+    */
+
+    var sentence =
+      "Опять же, думайте не столько о конечном результате, сколько о проектах развития, о действиях, которых вы должны совершить.";
+
+    var pidrs = ["же", "не", "о", "о", "о", "вы"];
+
+    // регуляр очка, вроде работает
+    var regexp = new RegExp(
+      String.raw`([^ЁёА-я\w]|^|$)(${Array.from(new Set(pidrs)).join(
+        "|"
+      )})([^ЁёА-я\w]|^|$)`,
+      "gmi"
+    );
+    console.log(regexp);
+
+    document.getElementById("original").innerText = sentence;
+
+    var processedSpan = document.getElementById("processed");
+
+    console.log(Symbol.matchAll);
+
+    var idxFrom = 0; // сюда будем складывать начальную границу подстроки, с каковой границы и начинается обычный текст
+
+    void sentence.replace(
+      regexp,
+      (entire, before, target, after, idx, string) => {
+        // entire - весь текст, который захватила регулярка
+        // before - текст из первой группы (оставляем без изменения)
+        // target - текст из второй группы (он нам и нужен, должны покрасить)
+        // before - текст из третьей группы (оставляем без изменения)
+        // idx - индекс в строке, с которой начинается вхождение подстроки entire
+        // string - сама строка полностью
+
+        // присоединяем подстроку первой группы
+        processedSpan.appendChild(
+          document.createTextNode(
+            string.substring(idxFrom, idx + before.length)
+          )
+        );
+
+        // присоединяем вторую группу с тегом b
+        var temp = document.createElement("b");
+        processedSpan.appendChild(((temp.innerText = target), temp));
+
+        // присоединяем третью группу
+        processedSpan.appendChild(document.createTextNode(after));
+        idxFrom = idx + entire.length;
+      }
+    );
+    // в конце присоединяем то, что осталось в строке
+    processedSpan.appendChild(
+      document.createTextNode(sentence.substring(idxFrom))
+    );
+  </script>
+</html>
